@@ -8,3 +8,7 @@ wheels/
 
 # Virtual environments
 .venv
+
+# Personal IPs, keys, and data
+.env
+secrets.h

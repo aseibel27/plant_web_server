@@ -3,11 +3,13 @@ import csv
 import os
 from datetime import datetime
 import requests
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 
-# Replace with your NodeMCU's IP address
-NODEMCU_IP = ""
+# Set NodeMCU's IP address
+load_dotenv()
+NODEMCU_IP = os.getenv("NODEMCU_IP")
 
 # Log file path
 LOG_PATH = "hourly_log.csv"
