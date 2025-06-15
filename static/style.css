@@ -1,0 +1,63 @@
+html {
+    font-family: Helvetica, Arial, sans-serif;
+    text-align: center;
+  }
+
+  .button {
+    background-color: #195B6A;
+    color: white;
+    padding: 16px;
+    font-size: 20px;
+    border: none;
+    margin: 10px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .button:active {
+    background-color: #0f3d45;
+  }
+
+  .moisture {
+    margin: 10px;
+    font-size: 18px;
+  }
+
+  #chartContainer {
+    height: 300px;
+    width: 100%;
+    max-width: 900px;
+    margin: 20px auto;
+    position: relative;
+  }
+
+  #moistureChart {
+    height: 100%;
+    width: 100%;
+  }
+
+  #buttonsContainer {
+    display: flex;
+    justify-content: center;
+    gap: 30px;  /* space between each plant */
+    margin-bottom: 20px;
+    flex-wrap: wrap; /* optional: wrap if screen is narrow */
+  }
+
+  .plant {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 120px; /* optional: fix min width for uniformity */
+  }
+
+  .plant label {
+    font-weight: bold;
+    margin-bottom: 8px;
+    font-size: 18px;
+  }
+
+  .plant .moisture {
+    margin-top: 8px;
+    font-size: 16px;
+  }

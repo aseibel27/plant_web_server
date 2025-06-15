@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Plant Watering System</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>Plant Watering System</h1>
+  <div id="clock" style="position: absolute; top: 10px; right: 20px; font-family: monospace; font-size: 16px;"></div>
+
+  <div id="buttonsContainer">
+    <!-- Plant controls (label, button, moisture) added dynamically by JS -->
+  </div>
+
+  <label for="historySelect">View:</label>
+  <select id="historySelect">
+    <option value="seconds">Seconds</option>
+    <option value="minutes">Minutes</option>
+    <option value="hours">Hours</option>
+  </select>
+
+  <div id="chartContainer">
+    <canvas id="moistureChart"></canvas>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="main.js"></script>
+  <script src="chart.js"></script>
+</body>
+</html>
