@@ -1,3 +1,4 @@
+// === main.js ===
 const outputCount = 4;
 const buttonsContainer = document.getElementById('buttonsContainer');
 
@@ -5,12 +6,10 @@ function createPlantElement(plantIndex) {
   const plantDiv = document.createElement('div');
   plantDiv.className = 'plant';
 
-  // Label
   const label = document.createElement('label');
   label.textContent = `Plant ${plantIndex + 1}`;
   plantDiv.appendChild(label);
 
-  // Button
   const btn = document.createElement('button');
   btn.className = 'button';
   btn.textContent = 'Water';
@@ -18,7 +17,6 @@ function createPlantElement(plantIndex) {
   btn.addEventListener('mouseup', () => togglePump(plantIndex, false));
   plantDiv.appendChild(btn);
 
-  // Moisture display
   const moistP = document.createElement('p');
   moistP.className = 'moisture';
   moistP.innerHTML = `Moisture: <span id="moist${plantIndex + 1}">--</span>%`;
@@ -28,15 +26,18 @@ function createPlantElement(plantIndex) {
 }
 
 function setupUI() {
-  buttonsContainer.innerHTML = ''; // Clear any previous content
+  buttonsContainer.innerHTML = '';
   for (let i = 0; i < outputCount; i++) {
     buttonsContainer.appendChild(createPlantElement(i));
   }
 }
 
 function togglePump(plant, state) {
-  const action = state ? 'on' : 'off';
-  fetch(`/${action}/${plant}`).catch(console.error);
+  fetch('/set_pump', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ id: plant, on: state })
+  }).catch(console.error);
 }
 
 async function updateMoisture() {
@@ -54,11 +55,10 @@ async function updateMoisture() {
 
 function updateClock() {
   const now = new Date();
-  const timeString = now.toLocaleString(); // includes both date and time
+  const timeString = now.toLocaleString();
   document.getElementById('clock').textContent = timeString;
 }
 
-// Initialize UI and start updates
 setupUI();
 setInterval(updateMoisture, 1000);
 setInterval(updateClock, 1000);

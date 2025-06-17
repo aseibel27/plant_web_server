@@ -9,6 +9,10 @@ wheels/
 # Virtual environments
 .venv
 
+# VS Code
+.vscode/
+
 # Personal IPs, keys, and data
 .env
 secrets.h
+logs/
