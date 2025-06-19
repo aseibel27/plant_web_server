@@ -1,33 +1,62 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Plant Watering System</title>
-  <link rel="stylesheet" href="style.css" />
-</head>
-<body>
-  <h1>Plant Watering System</h1>
-  <div id="clock" style="position: absolute; top: 10px; right: 20px; font-family: monospace; font-size: 16px;"></div>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>ESP8266 Plant Monitor</title>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <h1>ESP8266 Plant Monitor</h1>
+        <div
+            style="
+                position: absolute;
+                top: 10px;
+                right: 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: flex-end;
+                font-family: monospace;
+                font-size: 16px;
+                line-height: 1.4;
+            "
+        >
+            <div id="clock" style="white-space: nowrap">&nbsp;</div>
+            <div
+                id="statusIndicator"
+                style="display: flex; align-items: center; gap: 8px"
+            >
+                <span
+                    id="statusLight"
+                    style="
+                        width: 12px;
+                        height: 12px;
+                        border-radius: 50%;
+                        background-color: gray;
+                    "
+                ></span>
+                <span id="statusText">Checking...</span>
+            </div>
+        </div>
 
-  <div id="buttonsContainer">
-    <!-- Plant controls (label, button, moisture) added dynamically by JS -->
-  </div>
+        <div id="buttonsContainer">
+            <!-- Plant and env controls added dynamically -->
+        </div>
 
-  <label for="historySelect">View:</label>
-  <select id="historySelect">
-    <option value="seconds">Seconds</option>
-    <option value="minutes">Minutes</option>
-    <option value="hours">Hours</option>
-    <option value="days">Days</option>
-  </select>
+        <label for="historySelect">View:</label>
+        <select id="historySelect">
+            <option value="seconds">Seconds</option>
+            <option value="minutes">Minutes</option>
+            <option value="hours">Hours</option>
+            <option value="days">Days</option>
+        </select>
 
-  <div id="chartContainer">
-    <canvas id="moistureChart"></canvas>
-  </div>
+        <div id="chartContainer">
+            <canvas id="moistureChart"></canvas>
+        </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script src="main.js"></script>
-  <script src="chart.js"></script>
-</body>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script src="main.js"></script>
+        <script src="chart.js"></script>
+    </body>
 </html>

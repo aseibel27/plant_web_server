@@ -3,6 +3,10 @@
 #include <ESP8266HTTPClient.h>
 #include <ArduinoJson.h>
 #include <time.h>
+#include <DHT.h>
+#define DHTTYPE DHT22
+#define DHTPIN D4
+DHT dht(DHTPIN, DHTTYPE);       // We'll re-init this temporarily in code when needed
 
 #include "secrets.h" // Wifi credentials and server info
 
@@ -11,8 +15,14 @@ const int outputPins[] = {D2, D5, D6, D7};  // Pump control relays
 const int selectorPins[] = {D0, D1, D3};    // MUX control pins
 const int sensorPin = A0;
 
-// === Moisture Data ===
-int moistureValue[4];
+// === MUX selection matrix ===
+const int muxSelections[4][3] = {
+  {LOW, LOW, LOW}, {HIGH, LOW, LOW},
+  {LOW, HIGH, LOW}, {HIGH, HIGH, LOW},
+};
+
+// === Sensor Data ===
+int sensorValue[6];
 
 // === Web server to receive pump commands ===
 ESP8266WebServer server(80);
@@ -30,6 +40,7 @@ void setup() {
     pinMode(selectorPins[i], OUTPUT);
     digitalWrite(selectorPins[i], LOW);
   }
+  pinMode(DHTPIN, INPUT);
 
   // Connect Wi-Fi
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -47,6 +58,10 @@ void setup() {
   // Setup endpoint to receive pump commands
   server.on("/set_pump", HTTP_POST, handlePumpControl);
   server.begin();
+
+  // Initialize DHT
+  dht.begin();
+
 }
 
 // === Main Loop ===
@@ -56,6 +71,7 @@ void loop() {
 
   if (millis() - lastSent > 1000) {
     ReadMoisture();
+    ReadDHT();
     sendToFlask();
     lastSent = millis();
   }
@@ -63,14 +79,9 @@ void loop() {
 
 // === Read All 4 Moisture Channels ===
 void ReadMoisture() {
-  const int selections[4][3] = {
-    {LOW, LOW, LOW}, {HIGH, LOW, LOW},
-    {LOW, HIGH, LOW}, {HIGH, HIGH, LOW}
-  };
-
   for (int i = 0; i < 4; i++) {
     for (int j = 0; j < 3; j++) {
-      digitalWrite(selectorPins[j], selections[i][j]);
+      digitalWrite(selectorPins[j], muxSelections[i][j]);
     }
     delay(10);
 
@@ -82,8 +93,23 @@ void ReadMoisture() {
       case 2: mappedVal = map(raw, 813, 325, 0, 100); break;
       case 3: mappedVal = map(raw, 708, 300, 0, 100); break;
     }
-    moistureValue[i] = constrain(mappedVal, 0, 100);
+    sensorValue[i] = constrain(mappedVal, 0, 100);
   }
+}
+
+void ReadDHT() {
+  delay(10);  // Let signal stabilize
+
+  float t = dht.readTemperature(true);
+  Serial.printf("t: %.1f",t);
+  float h = dht.readHumidity();
+  Serial.printf("h: %.1f",h);
+  sensorValue[4] = isnan(t) ? NAN : (int)t;
+  sensorValue[5] = isnan(h) ? NAN : (int)h;
+
+  Serial.printf("Moist: %d %d %d %d | Temp: %.1f°C | Humidity: %.1f%%\n",
+    (int)sensorValue[0], (int)sensorValue[1], (int)sensorValue[2], (int)sensorValue[3],
+    sensorValue[4], sensorValue[5]);
 }
 
 // === Send Sensor Data to Flask ===
@@ -98,10 +124,12 @@ void sendToFlask() {
   http.addHeader("Content-Type", "application/json");
 
   StaticJsonDocument<200> doc;
-  doc["moist1"] = moistureValue[0];
-  doc["moist2"] = moistureValue[1];
-  doc["moist3"] = moistureValue[2];
-  doc["moist4"] = moistureValue[3];
+  doc["moist1"] = sensorValue[0];
+  doc["moist2"] = sensorValue[1];
+  doc["moist3"] = sensorValue[2];
+  doc["moist4"] = sensorValue[3];
+  doc["temp"] = sensorValue[4];
+  doc["hum"] = sensorValue[5];
 
   String json;
   serializeJson(doc, json);

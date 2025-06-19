@@ -1,10 +1,10 @@
 html {
     font-family: Helvetica, Arial, sans-serif;
     text-align: center;
-  }
+}
 
-  .button {
-    background-color: #195B6A;
+.button {
+    background-color: #195b6a;
     color: white;
     padding: 16px;
     font-size: 20px;
@@ -12,52 +12,81 @@ html {
     margin: 10px;
     cursor: pointer;
     user-select: none;
-  }
+}
 
-  .button:active {
+.button:active {
     background-color: #0f3d45;
-  }
+}
 
-  .moisture {
+.moisture {
     margin: 10px;
     font-size: 18px;
-  }
+}
 
-  #chartContainer {
+#chartContainer {
     height: 300px;
     width: 100%;
     max-width: 900px;
     margin: 20px auto;
     position: relative;
-  }
+}
 
-  #moistureChart {
+#moistureChart {
     height: 100%;
     width: 100%;
-  }
+}
 
-  #buttonsContainer {
+#buttonsContainer {
     display: flex;
     justify-content: center;
-    gap: 30px;  /* space between each plant */
+    gap: 30px;
     margin-bottom: 20px;
-    flex-wrap: wrap; /* optional: wrap if screen is narrow */
-  }
+    flex-wrap: wrap;
+}
 
-  .plant {
+.plant,
+.env {
     display: flex;
     flex-direction: column;
     align-items: center;
-    min-width: 120px; /* optional: fix min width for uniformity */
-  }
+    justify-content: center;
+    min-width: 140px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    background: #f9f9f9;
+    box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.05);
+}
 
-  .plant label {
+.env {
+    background: transparent !important; /* no background */
+    border: none !important; /* no border */
+    box-shadow: none !important;
+}
+
+.plant label,
+.env label {
     font-weight: bold;
     margin-bottom: 8px;
     font-size: 18px;
-  }
+}
 
-  .plant .moisture {
-    margin-top: 8px;
+.env p {
+    margin: 6px 0;
     font-size: 16px;
-  }
+}
+
+#statusIndicator {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+#statusLight {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: gray;
+}

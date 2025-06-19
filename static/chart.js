@@ -34,6 +34,19 @@ const moistureChart = new Chart(ctx, {
         borderColor: "orange",
         fill: false,
       },
+      {
+        label: "Temperature (°F)",
+        data: Array(60).fill(null),
+        borderColor: "magenta",
+        fill: false,
+        yAxisID: "y2",
+      },
+      {
+        label: "Humidity (%)",
+        data: Array(60).fill(null),
+        borderColor: "cyan",
+        fill: false,
+      },
     ],
   },
   options: {
@@ -44,7 +57,14 @@ const moistureChart = new Chart(ctx, {
       y: {
         min: 0,
         max: 100,
-        title: { display: true, text: "Moisture (%)" },
+        title: { display: true, text: "Moisture | Humidity (%)" },
+      },
+      y2: {
+        min: 30,
+        max: 120,
+        position: "right",
+        title: { display: true, text: "Temperature (°F)" },
+        grid: { drawOnChartArea: false },
       },
       x: {
         type: "category",
@@ -99,28 +119,29 @@ async function updateGraph() {
       moistureChart.data.labels = time;
     }
 
-    for (let i = 0; i < 4; i++) {
-      const key = `plant${i + 1}`;
-      const values = Array.isArray(data[key]) ? data[key] : [];
+    const padLength =
+      currentHistoryType === "seconds" || currentHistoryType === "minutes"
+        ? reversedLabels.length
+        : time.length;
 
-      // For seconds/minutes, pad to reversedLabels length (60)
-      const padLength =
-        currentHistoryType === "seconds" || currentHistoryType === "minutes"
-          ? reversedLabels.length
-          : time.length;
+    for (let i = 0; i < 6; i++) {
+      const key = `sensor${i + 1}`;
+      const values = Array.isArray(data[key]) ? data[key] : [];
 
       const padded = values
         .concat(Array(padLength - values.length).fill(null))
         .slice(0, padLength);
 
-      if (currentHistoryType === "hours" || currentHistoryType === "days") {
-        moistureChart.data.datasets[i].data = padded.map((v) =>
-          v === -1 ? null : v,
-        );
-      } else {
-        // Reverse data for seconds/minutes so it matches reversedLabels, but avoid mutating original array
-        moistureChart.data.datasets[i].data = padded.slice().reverse();
-      }
+      const cleaned = padded.map((v) =>
+        v === null || v === -1 || v === "-1" ? null : Number(v),
+      );
+
+      const finalData =
+        currentHistoryType === "seconds" || currentHistoryType === "minutes"
+          ? cleaned.slice().reverse()
+          : cleaned;
+
+      moistureChart.data.datasets[i].data = finalData;
     }
 
     const xLabel = {
