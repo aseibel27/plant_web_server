@@ -15,6 +15,22 @@ NODEMCU_IP = os.getenv("NODEMCU_IP")
 
 app = Flask(__name__)
 
+# Calibration bounds (editable without reflashing firmware)
+MOISTURE_CALIBRATION = {
+    0: (714, 302),  # Sensor 1: (dry, wet)
+    1: (714, 297),
+    2: (713, 295),
+    3: (694, 293),
+}
+
+def map_moisture(raw, dry, wet):
+    if raw < wet:
+        return 100
+    elif raw > dry:
+        return 0
+    else:
+        return int((dry - raw) * 100 / (dry - wet))
+
 # === In-Memory Rolling Buffers ===
 second_data = [deque(maxlen=60) for _ in range(6)]  # moisture per second
 minute_data = [deque(maxlen=60) for _ in range(6)]  # 1 avg per min
@@ -44,6 +60,10 @@ def save_csv_row(filepath, header, row):
             writer.writerow(header)
         writer.writerow(row)
 
+@app.route('/ping')
+def ping():
+    return "OK", 200
+
 # === Receive moisture data from ESP8266 (POST) ===
 @app.route('/moisture', methods=['POST'])
 def receive_moisture():
@@ -52,7 +72,15 @@ def receive_moisture():
 
     data = request.json or {}
     print("Received POST data:", data)
-    sensors = [data.get(f"moist{i+1}", -1) for i in range(4)]
+    sensors = []
+    for i in range(4):
+        raw = data.get(f"moist{i+1}", -1)
+        if raw == -1:
+            sensors.append(-1)
+        else:
+            dry, wet = MOISTURE_CALIBRATION[i]
+            mapped = map_moisture(raw, dry, wet)
+            sensors.append(mapped)
     sensors.append(data.get("temp", -1))
     sensors.append(data.get("hum", -1))
 
