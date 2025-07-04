@@ -15,6 +15,8 @@ function createPlantElement(plantIndex) {
   btn.textContent = "Water";
   btn.addEventListener("mousedown", () => togglePump(plantIndex, true));
   btn.addEventListener("mouseup", () => togglePump(plantIndex, false));
+  btn.addEventListener("touchstart", () => togglePump(plantIndex, true));
+  btn.addEventListener("touchend", () => togglePump(plantIndex, false));
   plantDiv.appendChild(btn);
 
   const moistP = document.createElement("p");
