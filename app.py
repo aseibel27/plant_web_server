@@ -72,6 +72,11 @@ def receive_moisture():
 
     data = request.json or {}
     print("Received POST data:", data)
+
+    # Store raw data for access via /raw
+    global latest_raw_readings
+    latest_raw_readings = data.copy()
+
     sensors = []
     for i in range(4):
         raw = data.get(f"moist{i+1}", -1)
@@ -80,6 +85,7 @@ def receive_moisture():
         else:
             dry, wet = MOISTURE_CALIBRATION[i]
             mapped = map_moisture(raw, dry, wet)
+
             sensors.append(mapped)
     sensors.append(data.get("temp", -1))
     sensors.append(data.get("hum", -1))
@@ -138,6 +144,11 @@ def receive_moisture():
             node_status = "online"
 
     return jsonify({'status': 'ok'})
+
+# === Get latest raw moisture readings (GET) ===
+@app.route('/raw', methods=['GET'])
+def get_raw():
+    return jsonify(latest_raw_readings)
 
 # === Get latest moisture readings (GET) ===
 @app.route('/moisture', methods=['GET'])
