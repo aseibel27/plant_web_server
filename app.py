@@ -18,7 +18,7 @@ app = Flask(__name__)
 # Calibration bounds (editable without reflashing firmware)
 MOISTURE_CALIBRATION = {
     0: (714, 302),  # Sensor 1: (dry, wet)
-    1: (504, 199),  # replaced sensor 2 on 7/4/25
+    1: (687, 288),  # replaced sensor 2 on 7/4/25
     2: (713, 295), 
     3: (694, 293),
 }
